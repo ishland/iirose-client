@@ -1,33 +1,50 @@
 const WebSocket = require('ws');
 const pako = require('pako');
 
-const ws = new WebSocket('wss://m.iirose.com:8777', {
-    rejectUnauthorized: false
-});
-
-ws.binaryType = 'arraybuffer';
-
-ws.onopen = () => {
-    module.exports.onopen();
-};
-
-ws.onmessage = event => {
-    let array = new Uint8Array(event.data);
-
-    let message;
-    if (array[0] == 1) {
-        message = pako.inflate(array.slice(1), {
-            to: 'string'
-        });
-    } else {
-        message = Buffer.from(array).toString('utf8');
+class IIRoseWebSocket {
+    constructor() {
+        this.open();
+        setInterval(() => {
+            if (this.websocket.readyState === WebSocket.OPEN) {
+                this.send('u');
+            }
+        }, 36e4);
     }
 
-    module.exports.onmessage(message);
-};
+    open() {
+        this.websocket = new WebSocket('wss://m.iirose.com:8777', {
+            rejectUnauthorized: false,
+        });
+        this.websocket.binaryType = 'arraybuffer';
+        this.setCallBacks();
+    }
 
-module.exports = {
-    send: data => {
+    setCallBacks() {
+        this.websocket.onopen = () => this.onopen();
+        this.websocket.onmessage = event => {
+            let array = new Uint8Array(event.data);
+
+            let message;
+            if (array[0] === 1) {
+                message = pako.inflate(array.slice(1), {
+                    to: 'string'
+                });
+            } else {
+                message = Buffer.from(array).toString('utf8');
+            }
+
+            this.onmessage(message);
+        };
+    }
+
+    reopen() {
+        if (this.websocket.readyState === WebSocket.OPEN) {
+            this.websocket.terminate();
+        }
+        this.open();
+    }
+
+    send(data) {
         let buffer = Buffer.from(data);
         let array = Uint8Array.from(buffer);
 
@@ -36,9 +53,11 @@ module.exports = {
             let deflatedArray = new Uint8Array(deflatedData.length + 1);
             deflatedArray[0] = 1;
             deflatedArray.set(deflatedData, 1);
-            ws.send(deflatedArray);
+            this.websocket.send(deflatedArray);
         } else {
-            ws.send(array);
+            this.websocket.send(array);
         }
     }
-};
+}
+
+module.exports = new IIRoseWebSocket();
