@@ -5,5 +5,9 @@ const Password = '密码MD5';
 module.exports = {
     r: RoomID,
     n: Username,
-    p: Password
+    p: Password,
+    st: 'n',
+    no: '*',
+    mb: '*',
+    mu: '01'
 };
