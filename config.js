@@ -7,7 +7,7 @@ module.exports = {
     n: Username,
     p: Password,
     st: 'n',
-    no: '*',
-    mb: '*',
+    mo: '',
+    mb: '',
     mu: '01'
 };

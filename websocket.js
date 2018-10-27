@@ -35,13 +35,13 @@ class IIRoseWebSocket {
 
             this.onmessage(message);
         };
+        this.websocket.onclose = () => this.open();
     }
 
-    reopen() {
+    close() {
         if (this.websocket.readyState === WebSocket.OPEN) {
             this.websocket.terminate();
         }
-        this.open();
     }
 
     send(data) {

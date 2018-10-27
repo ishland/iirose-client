@@ -27,7 +27,7 @@ function changeRoom(roomID) {
     let roomName = rooms.getRoom(roomID).name;
     console.log(`切换至房间 ${roomName}`);
     config.r = roomID;
-    ws.reopen();
+    ws.close();
 }
 
 function freshInfo(data) {
