@@ -12,7 +12,7 @@ class IIRoseWebSocket {
     }
 
     open() {
-        this.websocket = new WebSocket('wss://m.iirose.com:8777', {
+        this.websocket = new WebSocket('wss://m.iirose.com/', {
             rejectUnauthorized: false,
         });
         this.websocket.binaryType = 'arraybuffer';
